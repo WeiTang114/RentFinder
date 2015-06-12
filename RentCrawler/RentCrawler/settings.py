@@ -8,10 +8,10 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #
 
-BOT_NAME = 'RentScrawler'
+BOT_NAME = 'RentCrawler'
 
-SPIDER_MODULES = ['RentScrawler.spiders']
-NEWSPIDER_MODULE = 'RentScrawler.spiders'
+SPIDER_MODULES = ['RentCrawler.spiders']
+NEWSPIDER_MODULE = 'RentCrawler.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'RentScrawler (+http://www.yourdomain.com)'

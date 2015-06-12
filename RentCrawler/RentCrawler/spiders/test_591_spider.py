@@ -1,7 +1,7 @@
 import scrapy
 from scrapy.selector import Selector
 import json
-from RentScrawler.items import RentItem
+from RentCrawler.items import RentItem
 
 class Test591Spider(scrapy.spider.Spider):
     name = "test591"
@@ -24,11 +24,7 @@ class Test591Spider(scrapy.spider.Spider):
         #rents_str = rents_html.extract()
         print "len ", len(rents_html)
         #print rents_html[0].extract()
-        self.get_title(rents_html[0])
-        self.get_price(rents_html[0])
-        self.get_address(rents_html[0])
-        self.get_floor(rents_html[0])
-        self.get_link(rents_html[0])
+
         for rent_html in rents_html:
             item = RentItem()
             item['title'] = self.get_title(rent_html)
