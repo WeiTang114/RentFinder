@@ -8,6 +8,7 @@
 import scrapy
 
 class RentItem(scrapy.Item):
+    objectId = scrapy.Field()
     title = scrapy.Field()
     price = scrapy.Field()
     address = scrapy.Field()
