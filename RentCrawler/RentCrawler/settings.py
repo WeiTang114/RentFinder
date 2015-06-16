@@ -12,7 +12,7 @@ SPIDER_MODULES = ['RentCrawler.spiders']
 NEWSPIDER_MODULE = 'RentCrawler.spiders'
 
 ITEM_PIPELINES = {
-    'RentCrawler.itempipelines.DatasetPipeline.DatasetPipeline': 300
+    'RentCrawler.itempipelines.dataset_pipeline.DatasetPipeline': 300
 }
 
 SQLITE_URI='sqlite:///rent_crawler.db'
