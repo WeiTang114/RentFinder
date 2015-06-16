@@ -1,5 +1,6 @@
 import dataset
 from scrapy.mail import MailSender
+from scrapy import log
 
 class DatasetPipeline(object):
 
@@ -23,21 +24,20 @@ class DatasetPipeline(object):
         pass
 
     def process_item(self, item, spider):
-        print 'DatasetPipeline:Processcing item ', item['objectId']
+        log.msg('DatasetPipeline:Processcing item ' + item['objectId'], level=log.INFO)
         collection_name = item.__class__.__name__
-
         table = self.db[collection_name]
-        print item['objectId']
 
         if table.count(objectId=item['objectId']) > 0:
+            log.msg('Item ' + item['objectId'] + ' existed.', level=log.INFO)
             old_item = table.find_one(objectId=item['objectId'])
             self.notify_if_better(old_item, item)
             table.update(item, ['objectId'])
         else:
+            log.msg('New item ' + item['objectId'] + '.', level=log.INFO)
             self.notify_new(item)
             table.insert(item)
 
-        print table.count()
         return item
 
 
@@ -47,9 +47,11 @@ class DatasetPipeline(object):
 
     def notify_new(self, item):
         self.notify(item, "New Rent", "new rent")
+        log.msg('Notifying new item:' + item['objectId'])
 
     def notify_lowerprice(self, old_item, item):
         self.notify(item, "Lower price", str(old_item['price']) + " to " + str(item['price']))
+        log.msg('Notifying lower price item:' + item['objectId'])
 
     def notify(self, item, title, msg):
         msg = msg + "\n\n"  \
@@ -59,7 +61,9 @@ class DatasetPipeline(object):
               + "\nFloor:" + item["floor"].encode("utf-8") \
               + "\nlink:" + item["link"].encode("utf-8") \
               + "\nID:" + item['objectId'].encode("utf-8")
-        self.mailer.send(to=["weitang114@gmail.com"], subject=title, body=msg)
+        mail_to = ["weitang114@gmail.com"]
+        self.mailer.send(to=mail_to, subject='Test ' + title, body=msg)
+        log.msg('Sent mail notification to ' + str(mail_to) + '.')
 
 
 

@@ -3,7 +3,7 @@ from scrapy.selector import Selector
 import json
 from RentCrawler.items import RentItem
 import codecs
-import dataset
+from scrapy import log
 
 class Test591Spider(scrapy.spider.Spider):
     name = "test591"
@@ -14,20 +14,16 @@ class Test591Spider(scrapy.spider.Spider):
 
     def parse(self, response):
         filename = response.url.split("/")[-1]
-        # with open('out/' + filename, "wb") as f:
-        #     f.write(response.body.encode('utf-8'))
-        # with codecs.open('out/' + filename, 'w', 'utf-8') as f:
-        #     f.write(response.body.encode(''))
 
         data = json.loads(response.body)
         main = data['main']
 
-        print main
+        #print main
         with codecs.open('out/' + filename, 'w', 'utf-8') as f:
             f.write(response.body.encode('utf-8'))
 
         rents_html = Selector(text=main, type="html").xpath("//div[@class='shList ']")
-        print "len ", len(rents_html)
+        log.msg("Crawled rents count: " + str(len(rents_html)), level=log.DEBUG)
 
         for rent_html in rents_html:
             item = RentItem()
@@ -43,16 +39,15 @@ class Test591Spider(scrapy.spider.Spider):
         objectId = rent_html.xpath(".//div[@class='left']/@data-bind")[0] \
             .extract() \
             .encode("utf-8")
-        print 'id:', objectId
+        log.msg("id:" + objectId, level=log.DEBUG)
         return objectId
 
     def get_title(self, rent_html):
         datadiv = self.get_datadiv(rent_html)
         titlediv = datadiv.xpath(".//p[@class='title']//@title")
         title = titlediv[0].extract().encode('utf-8')
-        print title
+        log.msg(title, level=log.DEBUG)
         return title
-        #print titlediv.encode('utf-8')
 
     def get_price(self, rent_html):
         price_str = rent_html \
@@ -62,21 +57,21 @@ class Test591Spider(scrapy.spider.Spider):
         price_str = ''.join([s for s in price_str if s.isdigit()])
         price = int(price_str)
 
-        print price
+        log.msg(str(price), level=log.DEBUG)
         return price
 
     def get_address(self, rent_html):
         datadiv = self.get_datadiv(rent_html)
         addrp = datadiv.xpath("p")[1]
         addr = addrp.xpath("text()")[0].extract().encode("utf-8")
-        print addr
+        log.msg(addr, level=log.DEBUG)
         return addr
 
     def get_floor(self, rent_html):
         datadiv = self.get_datadiv(rent_html)
         floorp = datadiv.xpath("p")[2]
         floor = ''.join(floorp.xpath(".//text()").extract()).encode("utf-8")
-        print floor
+        log.msg(floor, level=log.DEBUG)
         return floor
 
     def get_datadiv(self, rent_html):
@@ -89,5 +84,5 @@ class Test591Spider(scrapy.spider.Spider):
         href = titlep.xpath(".//@href")[0].extract().encode('utf-8')
         mainurl = "http://rent.591.com.tw/"
         link = mainurl + href
-        print link
+        log.msg(link, level=log.DEBUG)
         return link
