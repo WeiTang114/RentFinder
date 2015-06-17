@@ -1,5 +1,4 @@
 import dataset
-from scrapy.mail import MailSender
 from scrapy import log
 from RentCrawler.itempipelines.notifiers.emailer import Emailer
 
@@ -9,7 +8,6 @@ class DatasetPipeline(object):
         self.tablename = 'Rent'
         self.sqlite_uri = sqlite_uri
         self.sqlite_dbname = sqlite_dbname
-        self.mailer = MailSender.from_settings(settings)
         self.notifiers = [
             Emailer(['weitang114@gmail.com'], settings)
         ]
