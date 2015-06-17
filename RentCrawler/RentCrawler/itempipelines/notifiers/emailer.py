@@ -1,3 +1,4 @@
+# coding=utf-8
 from notifier import BaseNotifier
 from scrapy import log
 from scrapy.mail import MailSender
@@ -9,25 +10,31 @@ class Emailer(BaseNotifier):
         self.mailer = MailSender.from_settings(settings)
 
     def notify_new(self, rentitem):
-        title = "New Rent"
+        subject = "[NewRent][" + str(rentitem['price']) + '] ' + rentitem['title']
         msg = "new rent"
-        self.notify(rentitem, title=title, msg=msg)
+        self.notify(rentitem, subject=subject, msg=msg)
         log.msg('Notifying new item:' + rentitem['objectId'])
 
     def notify_lowerprice(self, old_rentitem, rentitem):
-        title = "Lower price"
+        subject = "[Lower price][" + str(rentitem['price']) + '] ' + rentitem['title']
         msg = str(old_rentitem['price']) + " to " + str(rentitem['price'])
-        self.notify(rentitem, title=title, msg=msg)
+        self.notify(rentitem, subject=subject, msg=msg)
         log.msg('Notifying lower price item:' + rentitem['objectId'])
 
-    def notify(self, rentitem, title, msg):
-        msg = msg + "\n\n"  \
-              + "Title:" + rentitem["title"].encode("utf-8") \
-              + "\nPrice:" + str(rentitem["price"]) \
-              + "\nAddress:" + rentitem["address"].encode("utf-8") \
-              + "\nFloor:" + rentitem["floor"].encode("utf-8") \
-              + "\nlink:\n" + rentitem["link"].encode("utf-8") \
-              + "\nID:" + rentitem['objectId'].encode("utf-8")
-        self.mailer.send(to=self.receivers, subject=title, body=msg)
+    def notify(self, rentitem, subject, msg):
+        maplink = 'http://maps.google.com/?q=' + rentitem['address'].encode('utf-8')
+        itemlink = rentitem['link'].encode('utf-8')
+        NL = '<br>'
+        msg = msg + NL \
+              + 'Title:' + rentitem['title'].encode('utf-8') + NL \
+              + 'Price:' + str(rentitem['price']) + NL \
+              + 'Address:' + rentitem['address'].encode('utf-8') + ' ' \
+              + '<a href="' + maplink + '">' + 'Google Map' + '</a>' + NL \
+              + 'Floor:' + rentitem['floor'].encode('utf-8') + NL \
+              + 'Link:' + NL \
+              + '<a href="' + itemlink + '">' + itemlink + '</a>' + NL \
+              + 'ID:' + rentitem['objectId'].encode('utf-8')
+
+        self.mailer.send(to=self.receivers, subject=subject, body=msg, mimetype='text/html')
         log.msg('Sent mail notification to ' + str(self.receivers) + '.')
 
