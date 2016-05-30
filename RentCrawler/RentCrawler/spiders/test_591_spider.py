@@ -8,8 +8,11 @@ from scrapy import log
 class Test591Spider(scrapy.spider.Spider):
     name = "test591"
     allowed_domains = ["rent.591.com.tw"]
+    secs_xinpei = ['34', '37', '38'] # 34 HsingDien, 37 YongHo, 38 ChungHo
+    secs_xinpei_str = ','.join(secs_xinpei)
     start_urls = [
-        "http://rent.591.com.tw/index.php?module=search&action=rslist&is_new_list=1&type=1&searchtype=1&region=3&listview=img&rentprice=3&section=37&pattern=2&order=posttime&orderType=desc"
+        "http://rent.591.com.tw/index.php?module=search&action=rslist&is_new_list=1&type=1&searchtype=1&region=3&listview=img&rentprice=3&pattern=2&order=posttime&orderType=desc&section=" + secs_xinpei_str,
+        "http://rent.591.com.tw/index.php?module=search&action=rslist&is_new_list=1&type=1&searchtype=1&region=3&orderType=desc&section=37&kind=0&rentprice=5000,7500&pattern=0"
     ]
 
     def parse(self, response):
